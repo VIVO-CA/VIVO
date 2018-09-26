@@ -50,18 +50,18 @@ var schemes = {
 };
 var scheme = schemes["white"];
 
-
 var i18nStrings = {
-		
+
 		onLoad: function() {
 			 $.extend(this, i18nStringsMap);
 		}
-		
+
 }
 
 /**
- * The Capability prototype represents a search term. It does not directly store the results of the
- * search term, rather,the top-level unit is a group of People (see the Graph prototype).
+ * The Capability prototype represents a search term. It does not directly store
+ * the results of the search term, rather,the top-level unit is a group of
+ * People (see the Graph prototype).
  */
 var Capability = function(term, cutoff, numpeople) {
     this.term = term;
@@ -84,7 +84,10 @@ Person.prototype.queryText = function(capabilities) {
 }
 Person.prototype.setInfo = function(info) {
     this.info = info;
-    if (this.info["md_Z"] === undefined) { this.info["md_Z"] = ""; } else { this.info["md_Z"] = this.info["md_Z"].replace(/^.*\|/g, ""); } // stop things like "PROFTAYLOR|PROF"
+    if (this.info["md_Z"] === undefined) { this.info["md_Z"] = ""; } else { this.info["md_Z"] = this.info["md_Z"].replace(/^.*\|/g, ""); } // stop
+																																			// things
+																																			// like
+																																			// "PROFTAYLOR|PROF"
     if (this.info["md_A"] === undefined) { this.info["md_A"] = ""; } else { this.info["md_A"] = this.info["md_A"].replace(/<\/?strong>/g, ""); }
     if (this.info["md_B"] === undefined) { this.info["md_B"] = ""; } else { this.info["md_B"] = this.info["md_B"].replace(/<\/?strong>/g, ""); }
     if (this.info["md_4"] === undefined) { this.info["md_4"] = ""; }
@@ -100,12 +103,15 @@ var Group = function(g, c, people) {
     this.capabilities = c;
 }
 /**
- * Merge a group with a new capability. This function is called on every group whenever a new
- * capability is added, in order to `distribute' the new people among existing groups where applicable.
+ * Merge a group with a new capability. This function is called on every group
+ * whenever a new capability is added, in order to `distribute' the new people
+ * among existing groups where applicable.
  */
 Group.prototype.merge = function(capability, people) {
     var that = this; // scoping trick...
-    var common = this.people.filter(function(a) { return people.indexOf(a) != -1; }); // this.people & people
+    var common = this.people.filter(function(a) { return people.indexOf(a) != -1; }); // this.people
+																						// &
+																						// people
     var unmerged = people.filter(function(a) { return that.people.indexOf(a) == -1; });
     this.people = this.people.filter(function(a) { return people.indexOf(a) == -1; });
     if (!this.people.length) this.graph.removeGroup(this);
@@ -113,9 +119,10 @@ Group.prototype.merge = function(capability, people) {
     return unmerged;
 }
 /**
- * Removes a person from the group. Will destroy the group if the last person is removed.
+ * Removes a person from the group. Will destroy the group if the last person is
+ * removed.
  */
-Group.prototype.removePerson = function(person) { 
+Group.prototype.removePerson = function(person) {
     this.people = this.people.filter(function(a) {
         return (a != person && a.id != person.id);
     });
@@ -124,12 +131,14 @@ Group.prototype.removePerson = function(person) {
 }
 
 /**
- * And finally, the Graph prototype. This represents all the data associated with the capability map,
- * including search terms ("capabilities") as well as people. The representation is hierarchical,
- * with the data structure being composed of multiple Groups, with each group containing some
- * capabilities. This way, the graph itself is completely oblivious to what capabilities exist in it,
- * and must ask the groups about it when necessary. Nevertheless, everything is passed by reference
- * and so equality between groups and capabilities will always hold.
+ * And finally, the Graph prototype. This represents all the data associated
+ * with the capability map, including search terms ("capabilities") as well as
+ * people. The representation is hierarchical, with the data structure being
+ * composed of multiple Groups, with each group containing some capabilities.
+ * This way, the graph itself is completely oblivious to what capabilities exist
+ * in it, and must ask the groups about it when necessary. Nevertheless,
+ * everything is passed by reference and so equality between groups and
+ * capabilities will always hold.
  */
 var Graph = function() {
     this.groups = [];
@@ -178,7 +187,7 @@ Graph.prototype.removeCapability = function(term) {
             var cs = {};
             var shifted = false;
             $.each(g.groups[i].capabilities, function(key, c) {
-                cs[c.term] = c;                
+                cs[c.term] = c;
             });
             consideringGroups: for (var j = 0; j < g.groups.length; j++) {
                 if (j == i) continue;
@@ -269,7 +278,10 @@ Graph.prototype.tod3 = function() {
         d3_graph.labelAnchors.push(labelAnchorDict[capability.term][1]);
     });
     $.each(d3_graph.nodes, function(i, node) {
-        var k = d3_graph.labelAnchors[i * 2]["node"]["identifier"];// + " " + d3_graph.labelAnchors[i * 2 + 1]["node"]["label"];
+        var k = d3_graph.labelAnchors[i * 2]["node"]["identifier"];// + " " +
+																	// d3_graph.labelAnchors[i
+																	// * 2 +
+																	// 1]["node"]["label"];
         console.log(k);
         if (!labelAnchorLinkDict[k]) labelAnchorLinkDict[k] =
             {
@@ -331,8 +343,9 @@ Graph.import = function(jsonstr) {
 }
 
 /**
- * The ProgressBar prototype manages the functionality of a visual progress bar on the page.
- * Each copy of the ProgressBar represents a single bar on the page, which can be progressed and reset.
+ * The ProgressBar prototype manages the functionality of a visual progress bar
+ * on the page. Each copy of the ProgressBar represents a single bar on the
+ * page, which can be progressed and reset.
  */
 var ProgressBar = function(bar, length) {
     this.bar = bar;
@@ -355,8 +368,8 @@ ProgressBar.prototype.progress = function(amount, callback, text) {
 }
 
 /**
- * A FullResultQueryUnit is generated and queued when the full results for a person
- * needs to be retrieved.
+ * A FullResultQueryUnit is generated and queued when the full results for a
+ * person needs to be retrieved.
  */
 var FullResultQueryUnit = function(capabilities, person) {
     this.capabilities = capabilities;
@@ -369,15 +382,14 @@ FullResultQueryUnit.prototype.fetch = function() {
     request.addScriptTag();
 
 /*
-    TODO - create a new endpoint
- var query = this.person.queryText(this.capabilities);
- query = encodeURI(query);
-    var jsonurl = contextPath + "/search.html?collection=unimelb-researchers&type.max_clusters=40&&topic.max_clusters=40&form=faeJSON&query=" + query + "&num_ranks=1&callback=ipretFullResults"
-    var request = new JSONscriptRequest(jsonurl);
-    request.buildScriptTag();
-    request.addScriptTag();
-*/
-} 
+ * TODO - create a new endpoint var query =
+ * this.person.queryText(this.capabilities); query = encodeURI(query); var
+ * jsonurl = contextPath +
+ * "/search.html?collection=unimelb-researchers&type.max_clusters=40&&topic.max_clusters=40&form=faeJSON&query=" +
+ * query + "&num_ranks=1&callback=ipretFullResults" var request = new
+ * JSONscriptRequest(jsonurl); request.buildScriptTag(); request.addScriptTag();
+ */
+}
 
 var showPanel = function(name) {
     $(".titles li").removeClass("activeTab");
@@ -386,17 +398,18 @@ var showPanel = function(name) {
     $("#" + name).css("display", "block");
 }
 /**
- * The DetailsPanel prototype controls the display of information in the sidebar.
+ * The DetailsPanel prototype controls the display of information in the
+ * sidebar.
  */
 var DetailsPanel = function(element) {
-    this.panel = element;   
+    this.panel = element;
 }
 DetailsPanel.prototype.clearDetails = function() {
     $(this.panel).empty();
 }
 DetailsPanel.prototype.showDetails = function(mode, id) {
     showPanel("logg");
-    
+
     var that = this;
     var departments = {};
     var deptNames = [];
@@ -445,7 +458,7 @@ DetailsPanel.prototype.showDetails = function(mode, id) {
             );
             title.after(DetailsPanel.makebarchart(deptNames, departments));
     } else $(this.panel).empty().append(this.groupInfo(id, g.groups[id], mode, id));
-} 
+}
 DetailsPanel.prototype.groupInfo = function(i, group, mode, id) {
     var that = this;
     var departments = {};
@@ -513,10 +526,10 @@ DetailsPanel.prototype.groupInfo = function(i, group, mode, id) {
                         .append(DetailsPanel.makeslidedown(p.queryText(group.capabilities), p.fullInfo["md_8"], "grants"))
                         .append(DetailsPanel.makeslidedown(p.queryText(group.capabilities), p.fullInfo["md_U"], "publications"))
 
-                        
-                        
+
+
                     )
-                
+
             }, $("<div/>"))
         );
 }
@@ -538,13 +551,13 @@ DetailsPanel.makeslidedown = function(q, l, name) {
                 return list.append($("<li>" + grant + "</li>"));
             }, $("<ul/>")
                 .addClass("publist").css("display", "none"))
-                .append(l.length > 5 
+                .append(l.length > 5
                     ? $("<li/>")
-                    /*.append(
-                        $("<a>(view more)</a>")
-                        .attr("href", contextPath + "?query=" + encodeURI(q))
-                        .attr("target", "_blank")
-                    )*/
+                    /*
+					 * .append( $("<a>(view more)</a>") .attr("href",
+					 * contextPath + "?query=" + encodeURI(q)) .attr("target",
+					 * "_blank") )
+					 */
                     : ""
                 )
             )
@@ -570,12 +583,12 @@ DetailsPanel.makebarchart = function(deptNames, departments) {
     });
     return div;
 };
-            
+
 var loadCapability = function() {
     if (hidden) unhide();
     if (!queryQueue.length) finish();
     else {
-        disableSubButton(); 
+        disableSubButton();
         var query = queryQueue.pop();
         var jsonurl = contextPath + "/visualizationAjax?vis=capabilitymap&query=" + encodeURIComponent(query) + "&callback=ipretResults"
         var request = new JSONscriptRequest(jsonurl);
@@ -641,18 +654,18 @@ var getLinkColor = function() {
 }
 var render = function() {
     if (!force) $("#infovis").empty();
-    //if (!g.groups.length) return;
-    
+    // if (!g.groups.length) return;
+
     if (force) force.stop();
-    
+
     var d3_graph = g.tod3();
     var nodes = d3_graph.nodes;
     var labelAnchors = d3_graph.labelAnchors;
     var labelAnchorLinks = d3_graph.labelAnchorLinks;
     var links = d3_graph.links;
     var delta = !!force;
-    
-    
+
+
     var w = $("#infovis").width(), h = 600;
     if (schemes[$("#colorScheme").val()] !== undefined && scheme != schemes[$("#colorScheme").val()]) {
         scheme = schemes[$("#colorScheme").val()];
@@ -673,9 +686,10 @@ var render = function() {
             .attr('width', w).attr('height', h).attr('fill', scheme["backgroundcolor"])
             .on("click", unhighlight)
             .on("touchstart", unhighlight);
-        
+
         edge_layer = vis.append("svg:g");
-        node_layer = vis.append("svg:g");//.attr('width', w).attr('height', h).attr("fill", "transparent");
+        node_layer = vis.append("svg:g");// .attr('width', w).attr('height',
+											// h).attr("fill", "transparent");
         label_layer = vis.append("svg:g");
 
         var graph_gravity = parseInt($("#graph_gravity").val());
@@ -694,7 +708,7 @@ var render = function() {
                 .linkStrength(function(x) {
                     return x.weight * 10
                 });
-        
+
         force2 = d3.layout
             .force().gravity(0)
             .linkDistance(0).linkStrength(8).charge(-100).size([w, h]);
@@ -704,14 +718,14 @@ var render = function() {
     transformto(force.links(), links);
     transformto(force2.nodes(), labelAnchors);
     transformto(force2.links(), labelAnchorLinks);
-    
+
     if (delta) {
         force.alpha(0.05);
         force2.alpha(0.05);
     }
     force.start();
     force2.start();
-    
+
     link_data = edge_layer.selectAll("line.link").data(links, function(d) { return d.uid; });
     link_data.enter().append("svg:line")
         .attr("class", "link")
@@ -722,7 +736,7 @@ var render = function() {
         });
     link_data.exit().remove();
     link = edge_layer.selectAll("line.link");
-    
+
     var node_data = node_layer.selectAll("g.node").data(force.nodes(), function(d) { return d.uid; });
     var node = node_data.enter().append("svg:g");
     console.log("nodes:");
@@ -737,7 +751,7 @@ var render = function() {
         })
         .on("touchstart", function(d) {
             highlight(d.identifier);
-            detailsPane.showDetails(d.nodetype, d.identifier);        
+            detailsPane.showDetails(d.nodetype, d.identifier);
         })
         .style("stroke", scheme["nodestroke"])
         .style("stroke-width", 2)
@@ -767,10 +781,10 @@ var render = function() {
         .call(force.drag);
     node_data.exit().remove();
     node = d3.selectAll("g.node");
-    
+
     var anchorLink = label_layer.selectAll("line.anchorLink").data(labelAnchorLinks, function(d) { return d.uid; });
     anchorLink.exit().remove();
-    
+
     var anchor_data = label_layer.selectAll("g.anchorNode").data(force2.nodes(), function(d) { return d.uid; });
     var anchorNode = anchor_data.enter().append("svg:g").attr("class", "anchorNode");
     anchorNode.append("svg:circle").attr("r", 0).style("fill", "#FFF");
@@ -784,7 +798,7 @@ var render = function() {
         .style("text-shadow", function(d) {
             return d.node.nodetype == "group" ? "none" :
                 "2px 0px " + scheme["nodestroke"] +
-                ", -2px 0px " + scheme["nodestroke"] + 
+                ", -2px 0px " + scheme["nodestroke"] +
                 ", 0px 2px " + scheme["nodestroke"] +
                 ", 0px -2px " + scheme["nodestroke"];
         }).on("click", function(d) {
@@ -796,7 +810,7 @@ var render = function() {
     });
     anchor_data.exit().remove();
     anchorNode = label_layer.selectAll("g.anchorNode");
-    
+
     var updateLink = function() {
     	this.attr("x1", function(d) {
     		return d.source.x;
@@ -807,13 +821,13 @@ var render = function() {
     	}).attr("y2", function(d) {
     		return d.target.y;
     	});
-    
+
     }
     var updateNode = function() {
     	this.attr("transform", function(d) {
     		return "translate(" + d.x + "," + d.y + ")";
     	});
-    
+
     }
     force.on("tick", function() {
         $("#log button:first-child").html("pause");
@@ -837,9 +851,9 @@ var render = function() {
     	anchorNode.call(updateNode);
     	link.call(updateLink);
     	anchorLink.call(updateLink);
-    
+
     });
-    
+
     // refresh UI
     $("#log").empty().append($("<button>"+i18nStrings.capability_map_pause+"</button>")
         .bind("click", function() {
@@ -882,7 +896,7 @@ var render = function() {
                     .css("cursor", "pointer")
                 )
                 .prepend($("<input/>").attr("type", "checkbox")
-                    .attr("name", c.term)                   
+                    .attr("name", c.term)
                 )
             );
     });
@@ -911,9 +925,9 @@ var unhighlight = function() {
         d3.select(this).select("*").style("stroke", scheme["nodestroke"]);
     });
     d3.selectAll("line.link").each(function(d, i) {
-        //console.log(d.source.identifier);
-        //console.log(d.target.identifier);
-        //console.log(nodeid);
+        // console.log(d.source.identifier);
+        // console.log(d.target.identifier);
+        // console.log(nodeid);
         console.log(d3.select(this).style("stroke"));
         if (d3.select(this).style("stroke") == "#66cc99" || d3.select(this).style("stroke") == "rgb(102, 204, 153)") {
             var strokewidth = parseFloat(d3.select(this).style("stroke-width").replace(/px/g, ""));
@@ -929,8 +943,8 @@ var generateGraphPersonList = function() {
 }
 var generateGraphSVG = function() {
     download(
-        "<?xml version=\"1.0\" standalone=\"no\"?>\n" + 
-        "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" " +  
+        "<?xml version=\"1.0\" standalone=\"no\"?>\n" +
+        "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" " +
         "\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n" +
         $("#infovis").html().replace("<svg", "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"")
     , "svg");
@@ -951,7 +965,7 @@ var showhideadvanced = function(button) {
         $(button).html("Hide advanced");
     } else {
         $("#advanced_options").slideUp();
-        $("#advanced_options").data("shown", false);        
+        $("#advanced_options").data("shown", false);
         $(button).html("Show advanced");
     }
 }
@@ -982,7 +996,8 @@ var retrieveFullResults = function() {
     if (fullResultsQueue.length) fullResultsQueue.pop().fetch();
 }
 var ipretFullResults = function(result) {
-    if (g.people[result["results"][0]["md_1"]] != undefined) { // otherwise reset
+    if (g.people[result["results"][0]["md_1"]] != undefined) { // otherwise
+																// reset
         g.people[result["results"][0]["md_1"]].setInfo(result["results"][0]);
         g.people[result["results"][0]["md_1"]].fullInfo = result["results"][0];
         progressBar.progress(1, retrieveFullResults, g.people[result["results"][0]["md_1"]].info["md_B"]);
@@ -997,7 +1012,7 @@ var reset = function() {
         force = undefined;
         $("#infovis").html("");
         window.location.hash = "";
-        
+
         $("#log_printout").empty();
         detailsPane.clearDetails();
         $("#graphDetails").attr("value", "");
@@ -1011,7 +1026,7 @@ var reset = function() {
         $("#helptext").fadeIn();
     }
     render();
-    
+
 }
 var unhide = function() {
     hidden = false;
@@ -1027,10 +1042,10 @@ var unhide = function() {
     $("#helptext").fadeOut();
     $("#center-container").fadeIn();
 }
-   
+
 function run_demo(demoValues) {
     demoValues.forEach(function(query) {
-        queryQueue.push(query); 
+        queryQueue.push(query);
     });
     progressBar.reset(demoValues.length, 1);
     addKwd(false);
@@ -1054,12 +1069,12 @@ $(document).ready(function() {
     queryCutoffElem = document.getElementById('queryCutoff');
     detailsPane = new DetailsPanel('#inner-details');
     g = new Graph();
-    
+
     // results section text backup
     $(".result_section").each(function() {
         $(this).data("original", $(this).html());
     });
-    
+
     // querycutoffelem hadling
     $(queryCutoffElem).bind("keyup", function() {
         var that = this;
@@ -1089,7 +1104,7 @@ $(document).ready(function() {
         $(this).data("prev", $(this).val());
     });
     $(queryCutoffElem).data("prev", $(queryCutoffElem).val());
-    
+
     // URL hash reading
     if (window.location.hash != "") {
         var preset = decodeURI(window.location.hash).slice(1).split("|");
@@ -1098,7 +1113,7 @@ $(document).ready(function() {
         if (preset[2] == "1") expandLastQuery = 1;
         addKwd();
     }
-    
+
     // queryfield
     $("#query").bind("focus", function() {
         $(this).data("previous", $(this).val());
@@ -1110,7 +1125,7 @@ $(document).ready(function() {
     });
     $("#query").focus();
     enableSubButton();
-    
+
     // tabs
     $(".tabs div ul li + li + li + li + li").parent().children(":last-child").find("a").trigger("click");
     $(".tabs ul.titles li[class!=\"full\"]").bind("click", function(e) {
@@ -1132,9 +1147,9 @@ var transformto = function(a, b) { // a = b
         if (b.indexOf(a[i]) == -1) a.splice(i, 1);
         else i++;
     }
-    
+
 }
- 
-$(document).ready(function() {   
+
+$(document).ready(function() {
 	i18nStrings.onLoad();
 });
